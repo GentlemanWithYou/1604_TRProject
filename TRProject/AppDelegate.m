@@ -7,6 +7,8 @@
 //
 
 #import "AppDelegate.h"
+//当使用APP框架发送网络请求时，在电池条上显示 菊花 提示
+#import <AFNetworkActivityIndicatorManager.h>
 
 @interface AppDelegate ()
 
@@ -16,7 +18,19 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    //下方代码是用于实时监测设备的网络状态的固定写法，代码是固定的，可以不用背
+    //用处：爱奇艺播放视频时，如果是手机网络，不会直接播放，而回询问你，当前为手机网络，播放视频会产生大量流量，是否继续
+    
+    //有网络操作，就转  没有就不转  菊花，，
+    [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
+    [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+        NSLog(@"Reachability: %@", AFStringFromNetworkReachabilityStatus(status));
+    }];
+    
+    [[AFNetworkReachabilityManager sharedManager] startMonitoring];
+    
+    //要读取当前的网络情况，下方代码可以在任意类的任意方法中写
+    AFNetworkReachabilityStatus status = [AFNetworkReachabilityManager sharedManager].networkReachabilityStatus;
     return YES;
 }
 
